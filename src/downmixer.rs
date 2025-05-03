@@ -54,6 +54,7 @@ where
 /// * This also be used on single-channel audio or double-channel audio.
 pub struct SpeakerPosition;
 
+#[allow(non_upper_case_globals)]
 impl SpeakerPosition {
     pub const FrontLeft: u32 = 0x1;
     pub const FrontRight: u32 = 0x2;
@@ -354,9 +355,46 @@ impl Downmixer {
                 Ok(ret)
             }
             o => Err(AudioError::InvalidArguments(format!(
-                "The input channel mask is not dolby 5.1 layout, it is {}",
+                "The input channel mask is not downmixable, it is {}",
                 SpeakerPosition::channel_mask_to_string(o)
             ))),
+        }
+    }
+
+    fn downmix_frame_to_stereo<S>(&self, frame: &[S]) -> (S, S)
+    where
+        S: SampleType {
+        let gained: Vec<S> = frame.iter().enumerate().map(|(i, s)|S::cast_from(s.as_f64() * self.gains[i])).collect();
+        match self.channel_mask {
+            SpeakerPosition::Dolby5_1LayoutFrontBack | SpeakerPosition::Dolby5_1LayoutFrontSide=> {
+                (
+                    gained[0] + gained[2] + gained[3] + gained[4],
+                    gained[1] + gained[2] + gained[3] + gained[5],
+                )
+            }
+            SpeakerPosition::Dolby7_1Layout => {
+                (
+                    gained[0] + gained[2] + gained[3] + gained[4] + gained[6],
+                    gained[1] + gained[2] + gained[3] + gained[5] + gained[7],
+                )
+            }
+            o => panic!(
+                "The input channel mask is not downmixable, it is {}",
+                SpeakerPosition::channel_mask_to_string(o)
+            ),
+        }
+    }
+
+    pub fn downmix_frame_to_stereos<S>(&self, channel_mask: u32, frames: &[Vec<S>]) -> Result<Vec<(S, S)>, AudioError>
+    where
+        S: SampleType {
+        if self.channel_mask != channel_mask {
+            Err(AudioError::ChannekMaskNotMatch(format!(
+            "The given `channel_mask` 0x{:x} does not match the `channel_mask` 0x{:x} when the downmixer was initialized",
+            channel_mask, self.channel_mask
+            )))
+        } else {
+            Ok(frames.iter().map(|frame|self.downmix_frame_to_stereo(frame)).collect())
         }
     }
 }
