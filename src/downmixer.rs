@@ -1,6 +1,7 @@
 #![allow(dead_code)]
+use crate::AudioError;
 /// Algorithm Design:
-/// 1. Spatial Mapping: 
+/// 1. Spatial Mapping:
 ///    - Assign a 3D direction vector to each audio source, representing its position relative to the listener's head.
 ///    - Vectors are normalized (magnitude = 1.0) to abstract distance, focusing on angular positioning.
 ///
@@ -15,9 +16,7 @@
 /// This achieves lossless channel layout conversion (e.g., 5.1 → stereo) with spatial accuracy.
 ///
 /// Documents: <https://professionalsupport.dolby.com/s/article/How-do-the-5-1-and-Stereo-downmix-settings-work?language=en_US>
-
 use crate::SampleType;
-use crate::AudioError;
 use crate::copiablebuf::CopiableBuffer;
 
 /// * Convert dB modification to gain
@@ -34,14 +33,21 @@ pub fn gain_to_db(gain: f64) -> f64 {
 
 /// * Modify the dB of the sample.
 pub fn modify_db<S>(samples: &[S], db: f64) -> Vec<S>
-where S: SampleType {
+where
+    S: SampleType,
+{
     modify_gain(samples, db_to_gain(db))
 }
 
 /// * Modify the dB of the sample.
 pub fn modify_gain<S>(samples: &[S], gain: f64) -> Vec<S>
-where S: SampleType {
-    samples.iter().map(|s|S::cast_from(s.as_f64() * gain)).collect()
+where
+    S: SampleType,
+{
+    samples
+        .iter()
+        .map(|s| S::cast_from(s.as_f64() * gain))
+        .collect()
 }
 
 /// * Speaker position bit mask data for multi-channel audio.
@@ -49,46 +55,46 @@ where S: SampleType {
 pub struct SpeakerPosition;
 
 impl SpeakerPosition {
-    pub const FrontLeft             : u32 = 0x1;
-    pub const FrontRight            : u32 = 0x2;
-    pub const FrontCenter           : u32 = 0x4;
-    pub const LowFreq               : u32 = 0x8;
-    pub const BackLeft              : u32 = 0x10;
-    pub const BackRight             : u32 = 0x20;
-    pub const FrontLeftOfCenter     : u32 = 0x40;
-    pub const FrontRightOfCenter    : u32 = 0x80;
-    pub const BackCenter            : u32 = 0x100;
-    pub const SideLeft              : u32 = 0x200;
-    pub const SideRight             : u32 = 0x400;
-    pub const TopCenter             : u32 = 0x800;
-    pub const TopFrontLeft          : u32 = 0x1000;
-    pub const TopFrontCenter        : u32 = 0x2000;
-    pub const TopFrontRight         : u32 = 0x4000;
-    pub const TopBackLeft           : u32 = 0x8000;
-    pub const TopBackCenter         : u32 = 0x10000;
-    pub const TopBackRight          : u32 = 0x20000;
+    pub const FrontLeft: u32 = 0x1;
+    pub const FrontRight: u32 = 0x2;
+    pub const FrontCenter: u32 = 0x4;
+    pub const LowFreq: u32 = 0x8;
+    pub const BackLeft: u32 = 0x10;
+    pub const BackRight: u32 = 0x20;
+    pub const FrontLeftOfCenter: u32 = 0x40;
+    pub const FrontRightOfCenter: u32 = 0x80;
+    pub const BackCenter: u32 = 0x100;
+    pub const SideLeft: u32 = 0x200;
+    pub const SideRight: u32 = 0x400;
+    pub const TopCenter: u32 = 0x800;
+    pub const TopFrontLeft: u32 = 0x1000;
+    pub const TopFrontCenter: u32 = 0x2000;
+    pub const TopFrontRight: u32 = 0x4000;
+    pub const TopBackLeft: u32 = 0x8000;
+    pub const TopBackCenter: u32 = 0x10000;
+    pub const TopBackRight: u32 = 0x20000;
 
     pub fn channel_bit_to_string(bit: u32) -> &'static str {
         match bit {
-            Self::FrontLeft           => "front_left",
-            Self::FrontRight          => "front_right",
-            Self::FrontCenter         => "front_center",
-            Self::LowFreq             => "low_freq",
-            Self::BackLeft            => "back_left",
-            Self::BackRight           => "back_right",
-            Self::FrontLeftOfCenter   => "front_left_of_center",
-            Self::FrontRightOfCenter  => "front_right_of_center",
-            Self::BackCenter          => "back_center",
-            Self::SideLeft            => "side_left",
-            Self::SideRight           => "side_right",
-            Self::TopCenter           => "top_center",
-            Self::TopFrontLeft        => "top_front_left",
-            Self::TopFrontCenter      => "top_front_center",
-            Self::TopFrontRight       => "top_front_right",
-            Self::TopBackLeft         => "top_back_left",
-            Self::TopBackCenter       => "top_back_center",
-            Self::TopBackRight        => "top_back_right",
-            _ => "Invalid bit"
+            Self::FrontLeft => "front_left",
+            Self::FrontRight => "front_right",
+            Self::FrontCenter => "front_center",
+            Self::LowFreq => "low_freq",
+            Self::BackLeft => "back_left",
+            Self::BackRight => "back_right",
+            Self::FrontLeftOfCenter => "front_left_of_center",
+            Self::FrontRightOfCenter => "front_right_of_center",
+            Self::BackCenter => "back_center",
+            Self::SideLeft => "side_left",
+            Self::SideRight => "side_right",
+            Self::TopCenter => "top_center",
+            Self::TopFrontLeft => "top_front_left",
+            Self::TopFrontCenter => "top_front_center",
+            Self::TopFrontRight => "top_front_right",
+            Self::TopBackLeft => "top_back_left",
+            Self::TopBackCenter => "top_back_center",
+            Self::TopBackRight => "top_back_right",
+            _ => "Invalid bit",
         }
     }
 
@@ -121,14 +127,19 @@ impl SpeakerPosition {
         let mut ret = Vec::<u32>::new();
         for (i, m) in enums.iter().enumerate() {
             let m = *m as u32;
-            if channel_mask & m == m {ret.push(enums[i]);}
+            if channel_mask & m == m {
+                ret.push(enums[i]);
+            }
         }
         ret
     }
 
     /// * Break down `channel_mask` into each speaker position description string.
     pub fn channel_mask_to_speaker_positions_descs(channel_mask: u32) -> Vec<&'static str> {
-        Self::channel_mask_to_speaker_positions(channel_mask).iter().map(|e|Self::channel_bit_to_string(*e)).collect()
+        Self::channel_mask_to_speaker_positions(channel_mask)
+            .iter()
+            .map(|e| Self::channel_bit_to_string(*e))
+            .collect()
     }
 
     /// * Guess the channel mask by the given channel number.
@@ -174,11 +185,28 @@ impl SpeakerPosition {
     pub const StereoLayout: u32 = Self::FrontLeft | Self::FrontRight;
 
     /// * The channel mask for dolby 5.1 audio layout
-    pub const Dolby5_1LayoutFrontBack: u32 = Self::FrontLeft | Self::FrontRight | Self::FrontCenter | Self::BackLeft | Self::BackRight | Self::LowFreq;
-    pub const Dolby5_1LayoutFrontSide: u32 = Self::FrontLeft | Self::FrontRight | Self::FrontCenter | Self::SideLeft | Self::SideRight | Self::LowFreq;
+    pub const Dolby5_1LayoutFrontBack: u32 = Self::FrontLeft
+        | Self::FrontRight
+        | Self::FrontCenter
+        | Self::BackLeft
+        | Self::BackRight
+        | Self::LowFreq;
+    pub const Dolby5_1LayoutFrontSide: u32 = Self::FrontLeft
+        | Self::FrontRight
+        | Self::FrontCenter
+        | Self::SideLeft
+        | Self::SideRight
+        | Self::LowFreq;
 
     /// * The channel mask for dolby 7.1 audio layout
-    pub const Dolby7_1Layout: u32 = Self::FrontLeft | Self::FrontRight | Self::FrontCenter | Self::SideLeft | Self::SideRight | Self::BackLeft | Self::BackRight | Self::LowFreq;
+    pub const Dolby7_1Layout: u32 = Self::FrontLeft
+        | Self::FrontRight
+        | Self::FrontCenter
+        | Self::SideLeft
+        | Self::SideRight
+        | Self::BackLeft
+        | Self::BackRight
+        | Self::LowFreq;
 }
 
 /// ## Downmixer params for dolby 5.1 or 7.1
@@ -197,7 +225,7 @@ pub struct DownmixerParams {
     pub side_lr_db: f64,
 
     /// * Back left/right dB modifier
-    pub back_lr_db: f64
+    pub back_lr_db: f64,
 }
 
 impl DownmixerParams {
@@ -234,11 +262,11 @@ pub struct Downmixer {
 impl Downmixer {
     fn normalize_gains(&mut self) {
         let sum: f64 = self.gains.iter().sum();
-        self.gains = self.gains.iter().map(|x|x / sum).collect();
+        self.gains = self.gains.iter().map(|x| x / sum).collect();
     }
 
     pub fn new(channel_mask: u32, params: DownmixerParams) -> Result<Self, AudioError> {
-        let mut ret = Self{
+        let mut ret = Self {
             channels: 0,
             channel_mask,
             gains: CopiableBuffer::new(),
@@ -268,7 +296,7 @@ impl Downmixer {
                 // Normalize the gains
                 ret.normalize_gains();
                 Ok(ret)
-            },
+            }
             SpeakerPosition::Dolby5_1LayoutFrontSide => {
                 ret.channels = 6;
 
@@ -293,7 +321,7 @@ impl Downmixer {
                 // Normalize the gains
                 ret.normalize_gains();
                 Ok(ret)
-            },
+            }
             SpeakerPosition::Dolby7_1Layout => {
                 ret.channels = 8;
 
@@ -324,8 +352,11 @@ impl Downmixer {
                 // Normalize the gains
                 ret.normalize_gains();
                 Ok(ret)
-            },
-            o => Err(AudioError::InvalidArguments(format!("The input channel mask is not dolby 5.1 layout, it is {}", SpeakerPosition::channel_mask_to_string(o)))),
+            }
+            o => Err(AudioError::InvalidArguments(format!(
+                "The input channel mask is not dolby 5.1 layout, it is {}",
+                SpeakerPosition::channel_mask_to_string(o)
+            ))),
         }
     }
 }
