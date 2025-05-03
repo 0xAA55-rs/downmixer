@@ -410,6 +410,7 @@ pub struct Downmixer {
 }
 
 impl Downmixer {
+    /// ## Create a new `Downmixer` by specifying the channel mask and the `DownmixerParams` to compute gains for each channel.
     pub fn new(channel_mask: u32, params: DownmixerParams) -> Result<Self, AudioError> {
         let mut ret = Self {
             channels: 0,
@@ -431,6 +432,7 @@ impl Downmixer {
         (S::scale_from(lmix), S::scale_from(rmix))
     }
 
+    /// Downmix multiple audio frames to stereo frames
     pub fn downmix_frame_to_stereos<S>(&self, channel_mask: u32, frames: &[Vec<S>]) -> Result<Vec<(S, S)>, AudioError>
     where
         S: SampleType {
@@ -442,5 +444,21 @@ impl Downmixer {
         } else {
             Ok(frames.iter().map(|frame|self.downmix_frame_to_stereo(frame)).collect())
         }
+    }
+
+    /// * Downmix an audio frame to a mono frame.
+    pub fn downmix_frame_to_mono<S>(&self, frame: &[S]) -> S
+    where
+        S: SampleType {
+        let (l, r) = self.downmix_frame_to_stereo(frame);
+        S::average(l, r)
+    }
+
+    /// Downmix multiple audio frames to mono frames
+    pub fn downmix_frame_to_monos<S>(&self, channel_mask: u32, frames: &[Vec<S>]) -> Result<Vec<S>, AudioError>
+    where
+        S: SampleType {
+        let stereos = self.downmix_frame_to_stereos(channel_mask, frames)?;
+        Ok(utils::stereos_to_mono_channel(&stereos))
     }
 }
