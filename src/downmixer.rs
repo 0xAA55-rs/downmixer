@@ -405,8 +405,8 @@ pub struct Downmixer {
     /// The channel mask indicates which channel is for which speaker.
     pub channel_mask: u32,
 
-    /// The weights for downmixing
-    pub gains: CopiableBuffer<f64, 8>,
+    /// The weights for downmixing, the `u32` is the bitmask indicating which speaker the channel is, and the `f64` is the weight.
+    pub gains: CopiableBuffer<(u32, f64), 18>,
 }
 
 impl Downmixer {
