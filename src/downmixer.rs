@@ -1,5 +1,4 @@
 #![allow(dead_code)]
-use crate::AudioError;
 /// Algorithm Design:
 /// 1. Spatial Mapping:
 ///    - Assign a 3D direction vector to each audio source, representing its position relative to the listener's head.
@@ -16,7 +15,10 @@ use crate::AudioError;
 /// This achieves lossless channel layout conversion (e.g., 5.1 → stereo) with spatial accuracy.
 ///
 /// Documents: <https://professionalsupport.dolby.com/s/article/How-do-the-5-1-and-Stereo-downmix-settings-work?language=en_US>
+use std::collections::BTreeMap;
 use crate::SampleType;
+use crate::AudioError;
+use crate::utils;
 use crate::copiablebuf::CopiableBuffer;
 
 /// * Convert dB modification to gain
@@ -329,6 +331,28 @@ impl DownmixerParams {
             top_back_center_db: -4.5,
         }
     }
+
+    /// * Convert the `DownmixerParams` from `dB` to `gain`, build a `BTreeMap`, use the name to index it.
+    /// * Doing this is to normalize gains correctly. Normalization should not do extra `sum` for both left and right channels.
+    pub fn convert_to_normalized_gains(&self) -> BTreeMap<&'static str, f64> {
+        let gains = [
+            ("front_lr", self.front_lr_db),
+            ("front_center", self.front_center_db),
+            ("lowfreq", self.lowfreq_db),
+            ("back_lr", self.back_lr_db),
+            ("front_center_lr", self.front_center_lr_db),
+            ("back_center", self.back_center_db),
+            ("side_lr", self.side_lr_db),
+            ("top_center", self.top_center_db),
+            ("top_front_lr", self.top_front_lr_db),
+            ("top_front_center", self.top_front_center_db),
+            ("top_back_lr", self.top_back_lr_db),
+            ("top_back_center", self.top_back_center_db),
+        ].map(|(name, db)|(name, db_to_gain(db)));
+        let sum: f64 = gains.map(|(_, g)|g).iter().sum();
+        gains.into_iter().map(|(name, gain)|(name, gain / sum)).collect()
+    }
+
 }
 
 impl Default for DownmixerParams {
