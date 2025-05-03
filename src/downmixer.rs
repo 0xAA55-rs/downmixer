@@ -421,28 +421,14 @@ impl Downmixer {
         Ok(ret)
     }
 
-    fn downmix_frame_to_stereo<S>(&self, frame: &[S]) -> (S, S)
+    /// * Downmix an audio frame to a stereo frame.
+    pub fn downmix_frame_to_stereo<S>(&self, frame: &[S]) -> (S, S)
     where
         S: SampleType {
-        let gained: Vec<S> = frame.iter().enumerate().map(|(i, s)|S::cast_from(s.as_f64() * self.gains[i])).collect();
-        match self.channel_mask {
-            SpeakerPosition::Dolby5_1LayoutFrontBack | SpeakerPosition::Dolby5_1LayoutFrontSide=> {
-                (
-                    gained[0] + gained[2] + gained[3] + gained[4],
-                    gained[1] + gained[2] + gained[3] + gained[5],
-                )
-            }
-            SpeakerPosition::Dolby7_1Layout => {
-                (
-                    gained[0] + gained[2] + gained[3] + gained[4] + gained[6],
-                    gained[1] + gained[2] + gained[3] + gained[5] + gained[7],
-                )
-            }
-            o => panic!(
-                "The input channel mask is not downmixable, it is {}",
-                SpeakerPosition::channel_mask_to_string(o)
-            ),
-        }
+        use speaker_positions::*;
+        let lmix: f64 = self.gains.iter().enumerate().map(|(i, (b, x))| if is_lcenter(*b) {frame[i].to_f64() * x} else {0.0}).sum();
+        let rmix: f64 = self.gains.iter().enumerate().map(|(i, (b, x))| if is_rcenter(*b) {frame[i].to_f64() * x} else {0.0}).sum();
+        (S::scale_from(lmix), S::scale_from(rmix))
     }
 
     pub fn downmix_frame_to_stereos<S>(&self, channel_mask: u32, frames: &[Vec<S>]) -> Result<Vec<(S, S)>, AudioError>
