@@ -261,7 +261,7 @@ pub mod speaker_positions {
     }
 }
 
-/// ## Downmixer params for dolby 5.1 or 7.1
+/// ## Downmixer params for every channel. All of the weights of each speaker are defined here.
 #[derive(Debug, Clone, Copy)]
 pub struct DownmixerParams {
     /// * Front left/right dB modifier
@@ -273,11 +273,32 @@ pub struct DownmixerParams {
     /// * LFE dB modifier
     pub lowfreq_db: f64,
 
+    /// * Back left/right dB modifier
+    pub back_lr_db: f64,
+
+    /// * Front center left/right dB modifier
+    pub front_center_lr_db: f64,
+
+    /// * Back center dB modifier
+    pub back_center_db: f64,
+
     /// * Side left/right dB modifier
     pub side_lr_db: f64,
 
-    /// * Back left/right dB modifier
-    pub back_lr_db: f64,
+    /// * Top center dB modifier
+    pub top_center_db: f64,
+
+    /// * Top front left/right dB modifier
+    pub top_front_lr_db: f64,
+
+    /// * Top front center dB modifier
+    pub top_front_center_db: f64,
+
+    /// * Top back left/right dB modifier
+    pub top_back_lr_db: f64,
+
+    /// * Top back center dB modifier
+    pub top_back_center_db: f64,
 }
 
 impl DownmixerParams {
