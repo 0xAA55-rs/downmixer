@@ -81,13 +81,15 @@ pub mod speaker_positions {
     /// * The channel mask for stereo audio layout
     pub const STEREO_LAYOUT: u32 = FRONT_LEFT | FRONT_RIGHT;
 
-    /// * The channel mask for dolby 5.1 audio layout
+    /// * The channel mask for dolby 5.1 audio layout with back speakers
     pub const DOLBY_5_1_FRONT_BACK_LAYOUT: u32 = FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
         | BACK_LEFT
         | BACK_RIGHT
         | LOW_FREQ;
+
+    /// * The channel mask for dolby 5.1 audio layout with side speakers
     pub const DOLBY_5_1_FRONT_SIDE_LAYOUT: u32 = FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
@@ -132,30 +134,37 @@ pub mod speaker_positions {
     /// * The channel masks only for side channels
     pub const SIDE_BITS: u32 = LEFT_BITS | RIGHT_BITS;
 
+    /// * Is this channel for central speakers
     pub fn is_center(channel_bit: u32) -> bool {
         (channel_bit & CENTER_BITS) != 0
     }
 
+    /// * Is this channel for side speakers
     pub fn is_side(channel_bit: u32) -> bool {
         (channel_bit & SIDE_BITS) != 0
     }
 
+    /// * Is this channel for left side speakers
     pub fn is_left(channel_bit: u32) -> bool {
         (channel_bit & LEFT_BITS) != 0
     }
 
+    /// * Is this channel for right side speakers
     pub fn is_right(channel_bit: u32) -> bool {
         (channel_bit & RIGHT_BITS) != 0
     }
 
+    /// * Is this channel for left side or center speakers
     pub fn is_lcenter(channel_bit: u32) -> bool {
         (channel_bit & (LEFT_BITS | CENTER_BITS)) != 0
     }
 
+    /// * Is this channel for right side or center speakers
     pub fn is_rcenter(channel_bit: u32) -> bool {
         (channel_bit & (RIGHT_BITS | CENTER_BITS)) != 0
     }
 
+    /// Stringify the channel bits
     pub fn channel_bit_to_string(bit: u32) -> &'static str {
         match bit {
             FRONT_LEFT => "front_left",
@@ -180,6 +189,7 @@ pub mod speaker_positions {
         }
     }
 
+    /// * Break down `channel_mask` into strings, then join the string into one.
     pub fn channel_mask_to_string(channel_mask: u32) -> String {
         channel_mask_to_speaker_positions_descs(channel_mask).join(" + ")
     }
@@ -302,6 +312,7 @@ pub struct DownmixerParams {
 }
 
 impl DownmixerParams {
+    /// ## Setup default parameters
     pub fn new() -> Self {
         Self {
             front_lr_db: 0.0,
