@@ -75,6 +75,86 @@ pub mod speaker_positions {
     pub const TOP_BACK_CENTER: u32 = 0x10000;
     pub const TOP_BACK_RIGHT: u32 = 0x20000;
 
+    /// * The channel mask for mono audio layout
+    pub const MONO_LAYOUT: u32 = FRONT_CENTER;
+
+    /// * The channel mask for stereo audio layout
+    pub const STEREO_LAYOUT: u32 = FRONT_LEFT | FRONT_RIGHT;
+
+    /// * The channel mask for dolby 5.1 audio layout
+    pub const DOLBY_5_1_FRONT_BACK_LAYOUT: u32 = FRONT_LEFT
+        | FRONT_RIGHT
+        | FRONT_CENTER
+        | BACK_LEFT
+        | BACK_RIGHT
+        | LOW_FREQ;
+    pub const DOLBY_5_1_FRONT_SIDE_LAYOUT: u32 = FRONT_LEFT
+        | FRONT_RIGHT
+        | FRONT_CENTER
+        | SIDE_LEFT
+        | SIDE_RIGHT
+        | LOW_FREQ;
+
+    /// * The channel mask for dolby 7.1 audio layout
+    pub const DOLBY_7_1_LAYOUT: u32 = FRONT_LEFT
+        | FRONT_RIGHT
+        | FRONT_CENTER
+        | SIDE_LEFT
+        | SIDE_RIGHT
+        | BACK_LEFT
+        | BACK_RIGHT
+        | LOW_FREQ;
+
+    /// * The channel masks only for center channels
+    pub const CENTER_BITS: u32 = FRONT_CENTER
+        | BACK_CENTER
+        | LOW_FREQ
+        | TOP_CENTER
+        | TOP_FRONT_CENTER
+        | TOP_BACK_CENTER;
+
+    /// * The channel masks only for left channels
+    pub const LEFT_BITS: u32 = FRONT_LEFT
+        | BACK_LEFT
+        | FRONT_LEFT_OF_CENTER
+        | SIDE_LEFT
+        | TOP_FRONT_LEFT
+        | TOP_BACK_LEFT;
+
+    /// * The channel masks only for right channels
+    pub const RIGHT_BITS: u32 = FRONT_RIGHT
+        | BACK_RIGHT
+        | FRONT_RIGHT_OF_CENTER
+        | SIDE_RIGHT
+        | TOP_FRONT_RIGHT
+        | TOP_BACK_RIGHT;
+
+    /// * The channel masks only for side channels
+    pub const SIDE_BITS: u32 = LEFT_BITS | RIGHT_BITS;
+
+    pub fn is_center(channel_bit: u32) -> bool {
+        (channel_bit & CENTER_BITS) != 0
+    }
+
+    pub fn is_side(channel_bit: u32) -> bool {
+        (channel_bit & SIDE_BITS) != 0
+    }
+
+    pub fn is_left(channel_bit: u32) -> bool {
+        (channel_bit & LEFT_BITS) != 0
+    }
+
+    pub fn is_right(channel_bit: u32) -> bool {
+        (channel_bit & RIGHT_BITS) != 0
+    }
+
+    pub fn is_lcenter(channel_bit: u32) -> bool {
+        (channel_bit & (LEFT_BITS | CENTER_BITS)) != 0
+    }
+
+    pub fn is_rcenter(channel_bit: u32) -> bool {
+        (channel_bit & (RIGHT_BITS | CENTER_BITS)) != 0
+    }
 
     pub fn channel_bit_to_string(bit: u32) -> &'static str {
         match bit {
@@ -179,36 +259,6 @@ pub mod speaker_positions {
         }
         counter == channels
     }
-
-    /// * The channel mask for mono audio layout
-    pub const MonoLayout: u32 = Self::FrontCenter;
-
-    /// * The channel mask for stereo audio layout
-    pub const StereoLayout: u32 = Self::FrontLeft | Self::FrontRight;
-
-    /// * The channel mask for dolby 5.1 audio layout
-    pub const Dolby5_1LayoutFrontBack: u32 = Self::FrontLeft
-        | Self::FrontRight
-        | Self::FrontCenter
-        | Self::BackLeft
-        | Self::BackRight
-        | Self::LowFreq;
-    pub const Dolby5_1LayoutFrontSide: u32 = Self::FrontLeft
-        | Self::FrontRight
-        | Self::FrontCenter
-        | Self::SideLeft
-        | Self::SideRight
-        | Self::LowFreq;
-
-    /// * The channel mask for dolby 7.1 audio layout
-    pub const Dolby7_1Layout: u32 = Self::FrontLeft
-        | Self::FrontRight
-        | Self::FrontCenter
-        | Self::SideLeft
-        | Self::SideRight
-        | Self::BackLeft
-        | Self::BackRight
-        | Self::LowFreq;
 }
 
 /// ## Downmixer params for dolby 5.1 or 7.1
