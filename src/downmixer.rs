@@ -410,11 +410,6 @@ pub struct Downmixer {
 }
 
 impl Downmixer {
-    fn normalize_gains(&mut self) {
-        let sum: f64 = self.gains.iter().sum();
-        self.gains = self.gains.iter().map(|x| x / sum).collect();
-    }
-
     pub fn new(channel_mask: u32, params: DownmixerParams) -> Result<Self, AudioError> {
         let mut ret = Self {
             channels: 0,
