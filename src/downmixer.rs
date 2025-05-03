@@ -416,93 +416,9 @@ impl Downmixer {
             channel_mask,
             gains: CopiableBuffer::new(),
         };
-        match channel_mask {
-            SpeakerPosition::Dolby5_1LayoutFrontBack => {
-                ret.channels = 6;
-
-                // Front left
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front right
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front center
-                ret.gains.push(db_to_gain(params.front_center_db));
-
-                // Low freq
-                ret.gains.push(db_to_gain(params.lowfreq_db));
-
-                // Back left
-                ret.gains.push(db_to_gain(params.back_lr_db));
-
-                // Back right
-                ret.gains.push(db_to_gain(params.back_lr_db));
-
-                // Normalize the gains
-                ret.normalize_gains();
-                Ok(ret)
-            }
-            SpeakerPosition::Dolby5_1LayoutFrontSide => {
-                ret.channels = 6;
-
-                // Front left
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front right
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front center
-                ret.gains.push(db_to_gain(params.front_center_db));
-
-                // Low freq
-                ret.gains.push(db_to_gain(params.lowfreq_db));
-
-                // Side left
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Side right
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Normalize the gains
-                ret.normalize_gains();
-                Ok(ret)
-            }
-            SpeakerPosition::Dolby7_1Layout => {
-                ret.channels = 8;
-
-                // Front left
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front right
-                ret.gains.push(db_to_gain(params.front_lr_db));
-
-                // Front center
-                ret.gains.push(db_to_gain(params.front_center_db));
-
-                // Low freq
-                ret.gains.push(db_to_gain(params.lowfreq_db));
-
-                // Back left
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Back right
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Side left
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Side right
-                ret.gains.push(db_to_gain(params.side_lr_db));
-
-                // Normalize the gains
-                ret.normalize_gains();
-                Ok(ret)
-            }
-            o => Err(AudioError::InvalidArguments(format!(
-                "The input channel mask is not downmixable, it is {}",
-                SpeakerPosition::channel_mask_to_string(o)
-            ))),
-        }
+        ret.gains = params.gains_from_channel_mask(channel_mask).into_iter().collect();
+        ret.channels = ret.gains.len() as u16;
+        Ok(ret)
     }
 
     fn downmix_frame_to_stereo<S>(&self, frame: &[S]) -> (S, S)
