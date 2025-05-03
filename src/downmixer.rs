@@ -52,78 +52,79 @@ where
 
 /// * Speaker position bit mask data for multi-channel audio.
 /// * This also be used on single-channel audio or double-channel audio.
-pub struct SpeakerPosition;
-
 #[allow(non_upper_case_globals)]
-impl SpeakerPosition {
-    pub const FrontLeft: u32 = 0x1;
-    pub const FrontRight: u32 = 0x2;
-    pub const FrontCenter: u32 = 0x4;
-    pub const LowFreq: u32 = 0x8;
-    pub const BackLeft: u32 = 0x10;
-    pub const BackRight: u32 = 0x20;
-    pub const FrontLeftOfCenter: u32 = 0x40;
-    pub const FrontRightOfCenter: u32 = 0x80;
-    pub const BackCenter: u32 = 0x100;
-    pub const SideLeft: u32 = 0x200;
-    pub const SideRight: u32 = 0x400;
-    pub const TopCenter: u32 = 0x800;
-    pub const TopFrontLeft: u32 = 0x1000;
-    pub const TopFrontCenter: u32 = 0x2000;
-    pub const TopFrontRight: u32 = 0x4000;
-    pub const TopBackLeft: u32 = 0x8000;
-    pub const TopBackCenter: u32 = 0x10000;
-    pub const TopBackRight: u32 = 0x20000;
+pub mod speaker_positions {
+    use crate::AudioError;
+
+    pub const FRONT_LEFT: u32 = 0x1;
+    pub const FRONT_RIGHT: u32 = 0x2;
+    pub const FRONT_CENTER: u32 = 0x4;
+    pub const LOW_FREQ: u32 = 0x8;
+    pub const BACK_LEFT: u32 = 0x10;
+    pub const BACK_RIGHT: u32 = 0x20;
+    pub const FRONT_LEFT_OF_CENTER: u32 = 0x40;
+    pub const FRONT_RIGHT_OF_CENTER: u32 = 0x80;
+    pub const BACK_CENTER: u32 = 0x100;
+    pub const SIDE_LEFT: u32 = 0x200;
+    pub const SIDE_RIGHT: u32 = 0x400;
+    pub const TOP_CENTER: u32 = 0x800;
+    pub const TOP_FRONT_LEFT: u32 = 0x1000;
+    pub const TOP_FRONT_CENTER: u32 = 0x2000;
+    pub const TOP_FRONT_RIGHT: u32 = 0x4000;
+    pub const TOP_BACK_LEFT: u32 = 0x8000;
+    pub const TOP_BACK_CENTER: u32 = 0x10000;
+    pub const TOP_BACK_RIGHT: u32 = 0x20000;
+
 
     pub fn channel_bit_to_string(bit: u32) -> &'static str {
         match bit {
-            Self::FrontLeft => "front_left",
-            Self::FrontRight => "front_right",
-            Self::FrontCenter => "front_center",
-            Self::LowFreq => "low_freq",
-            Self::BackLeft => "back_left",
-            Self::BackRight => "back_right",
-            Self::FrontLeftOfCenter => "front_left_of_center",
-            Self::FrontRightOfCenter => "front_right_of_center",
-            Self::BackCenter => "back_center",
-            Self::SideLeft => "side_left",
-            Self::SideRight => "side_right",
-            Self::TopCenter => "top_center",
-            Self::TopFrontLeft => "top_front_left",
-            Self::TopFrontCenter => "top_front_center",
-            Self::TopFrontRight => "top_front_right",
-            Self::TopBackLeft => "top_back_left",
-            Self::TopBackCenter => "top_back_center",
-            Self::TopBackRight => "top_back_right",
+            FRONT_LEFT => "front_left",
+            FRONT_RIGHT => "front_right",
+            FRONT_CENTER => "front_center",
+            LOW_FREQ => "low_freq",
+            BACK_LEFT => "back_left",
+            BACK_RIGHT => "back_right",
+            FRONT_LEFT_OF_CENTER => "front_left_of_center",
+            FRONT_RIGHT_OF_CENTER => "front_right_of_center",
+            BACK_CENTER => "back_center",
+            SIDE_LEFT => "side_left",
+            SIDE_RIGHT => "side_right",
+            TOP_CENTER => "top_center",
+            TOP_FRONT_LEFT => "top_front_left",
+            TOP_FRONT_CENTER => "top_front_center",
+            TOP_FRONT_RIGHT => "top_front_right",
+            TOP_BACK_LEFT => "top_back_left",
+            TOP_BACK_CENTER => "top_back_center",
+            TOP_BACK_RIGHT => "top_back_right",
             _ => "Invalid bit",
         }
     }
 
     pub fn channel_mask_to_string(channel_mask: u32) -> String {
-        Self::channel_mask_to_speaker_positions_descs(channel_mask).join(" + ")
+        channel_mask_to_speaker_positions_descs(channel_mask).join(" + ")
     }
 
     /// * Break down `channel_mask` into each speaker position enum values to an array.
     pub fn channel_mask_to_speaker_positions(channel_mask: u32) -> Vec<u32> {
         let enums = [
-            Self::FrontLeft,
-            Self::FrontRight,
-            Self::FrontCenter,
-            Self::LowFreq,
-            Self::BackLeft,
-            Self::BackRight,
-            Self::FrontLeftOfCenter,
-            Self::FrontRightOfCenter,
-            Self::BackCenter,
-            Self::SideLeft,
-            Self::SideRight,
-            Self::TopCenter,
-            Self::TopFrontLeft,
-            Self::TopFrontCenter,
-            Self::TopFrontRight,
-            Self::TopBackLeft,
-            Self::TopBackCenter,
-            Self::TopBackRight,
+            FRONT_LEFT,
+            FRONT_RIGHT,
+            FRONT_CENTER,
+            LOW_FREQ,
+            BACK_LEFT,
+            BACK_RIGHT,
+            FRONT_LEFT_OF_CENTER,
+            FRONT_RIGHT_OF_CENTER,
+            BACK_CENTER,
+            SIDE_LEFT,
+            SIDE_RIGHT,
+            TOP_CENTER,
+            TOP_FRONT_LEFT,
+            TOP_FRONT_CENTER,
+            TOP_FRONT_RIGHT,
+            TOP_BACK_LEFT,
+            TOP_BACK_CENTER,
+            TOP_BACK_RIGHT,
         ];
         let mut ret = Vec::<u32>::new();
         for (i, m) in enums.iter().enumerate() {
@@ -137,9 +138,9 @@ impl SpeakerPosition {
 
     /// * Break down `channel_mask` into each speaker position description string.
     pub fn channel_mask_to_speaker_positions_descs(channel_mask: u32) -> Vec<&'static str> {
-        Self::channel_mask_to_speaker_positions(channel_mask)
+        channel_mask_to_speaker_positions(channel_mask)
             .iter()
-            .map(|e| Self::channel_bit_to_string(*e))
+            .map(|e| channel_bit_to_string(*e))
             .collect()
     }
 
@@ -147,10 +148,10 @@ impl SpeakerPosition {
     pub fn guess_channel_mask(channels: u16) -> Result<u32, AudioError> {
         match channels {
             0 => Err(AudioError::GuessChannelMaskFailed(channels)),
-            1 => Ok(Self::MonoLayout),
-            2 => Ok(Self::StereoLayout),
-            6 => Ok(Self::Dolby5_1LayoutFrontBack),
-            8 => Ok(Self::Dolby7_1Layout),
+            1 => Ok(MONO_LAYOUT),
+            2 => Ok(STEREO_LAYOUT),
+            6 => Ok(DOLBY_5_1_FRONT_BACK_LAYOUT),
+            8 => Ok(DOLBY_7_1_LAYOUT),
             o => {
                 let mut mask = 0;
                 for i in 0..o {
