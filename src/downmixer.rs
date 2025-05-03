@@ -353,6 +353,41 @@ impl DownmixerParams {
         gains.into_iter().map(|(name, gain)|(name, gain / sum)).collect()
     }
 
+    /// * Convert a channel mask to each channel's gain value
+    /// * If the corresponding bit in the channel_mask is zero, the bit and the gain value will not be stored in the list
+    pub fn gains_from_channel_mask(&self, channel_mask: u32) -> Vec<(u32, f64)> {
+        use speaker_positions::*;
+        let gains = self.convert_to_normalized_gains();
+        (0..18).flat_map(
+        |i| -> Option<(u32, f64)> {
+            let bit = 1 << i; // The bit
+            if channel_mask & bit != 0 {
+                Some((bit, *match bit {
+                    FRONT_LEFT => gains.get("front_lr").unwrap(),
+                    FRONT_RIGHT => gains.get("front_lr").unwrap(),
+                    FRONT_CENTER => gains.get("front_center").unwrap(),
+                    LOW_FREQ => gains.get("lowfreq").unwrap(),
+                    BACK_LEFT => gains.get("back_lr").unwrap(),
+                    BACK_RIGHT => gains.get("back_lr").unwrap(),
+                    FRONT_LEFT_OF_CENTER => gains.get("front_center_lr").unwrap(),
+                    FRONT_RIGHT_OF_CENTER => gains.get("front_center_lr").unwrap(),
+                    BACK_CENTER => gains.get("back_center").unwrap(),
+                    SIDE_LEFT => gains.get("side_lr").unwrap(),
+                    SIDE_RIGHT => gains.get("side_lr").unwrap(),
+                    TOP_CENTER => gains.get("top_center").unwrap(),
+                    TOP_FRONT_LEFT => gains.get("top_front_lr").unwrap(),
+                    TOP_FRONT_CENTER => gains.get("top_front_center").unwrap(),
+                    TOP_FRONT_RIGHT => gains.get("top_front_lr").unwrap(),
+                    TOP_BACK_LEFT => gains.get("top_back_lr").unwrap(),
+                    TOP_BACK_CENTER => gains.get("top_back_center").unwrap(),
+                    TOP_BACK_RIGHT => gains.get("top_back_lr").unwrap(),
+                    _ => &-100.0,
+                }))
+            } else {
+                None // To be `flatten()`ed
+            }
+        }).collect()
+    }
 }
 
 impl Default for DownmixerParams {
