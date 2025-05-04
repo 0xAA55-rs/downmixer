@@ -15,6 +15,8 @@
 /// This achieves lossless channel layout conversion (e.g., 5.1 → stereo) with spatial accuracy.
 ///
 /// Documents: <https://professionalsupport.dolby.com/s/article/How-do-the-5-1-and-Stereo-downmix-settings-work?language=en_US>
+/// Documents: <https://www.dolby.com/about/support/guide/speaker-setup-guides/7.1-virtual-speakers-setup-guide>
+/// Documents: <https://trac.ffmpeg.org/wiki/AudioChannelManipulation>
 use std::collections::BTreeMap;
 use crate::SampleType;
 use crate::AudioError;
@@ -220,7 +222,7 @@ pub mod speaker_positions {
         ];
         let mut ret = Vec::<u32>::new();
         for (i, m) in enums.iter().enumerate() {
-            let m = *m as u32;
+            let m = *m;
             if channel_mask & m == m {
                 ret.push(enums[i]);
             }
