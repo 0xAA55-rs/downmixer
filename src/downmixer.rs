@@ -21,7 +21,7 @@ use std::collections::BTreeMap;
 use crate::SampleType;
 use crate::AudioError;
 use crate::utils;
-use crate::copiablebuf::CopiableBuffer;
+use crate::CopiableBuffer;
 
 /// * Convert dB modification to gain
 #[inline(always)]
