@@ -18,10 +18,11 @@
 /// Documents: <https://www.dolby.com/about/support/guide/speaker-setup-guides/7.1-virtual-speakers-setup-guide>
 /// Documents: <https://trac.ffmpeg.org/wiki/AudioChannelManipulation>
 use std::collections::BTreeMap;
+
 use crate::SampleType;
-use crate::AudioError;
-use crate::CopiableBuffer;
+use crate::errors::AudioError;
 use crate::audioutils;
+use crate::utils::CopiableBuffer;
 
 /// * Convert dB modification to gain
 #[inline(always)]
@@ -58,7 +59,7 @@ where
 /// * This also be used on single-channel audio or double-channel audio.
 #[allow(non_upper_case_globals)]
 pub mod speaker_positions {
-    use crate::AudioError;
+    use crate::errors::AudioError;
 
     pub const FRONT_LEFT: u32 = 0x1;
     pub const FRONT_RIGHT: u32 = 0x2;
