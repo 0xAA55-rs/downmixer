@@ -20,8 +20,8 @@
 use std::collections::BTreeMap;
 use crate::SampleType;
 use crate::AudioError;
-use crate::utils;
 use crate::CopiableBuffer;
+use crate::audioutils;
 
 /// * Convert dB modification to gain
 #[inline(always)]
@@ -461,6 +461,6 @@ impl Downmixer {
     where
         S: SampleType {
         let stereos = self.downmix_frame_to_stereos(channel_mask, frames)?;
-        Ok(utils::stereos_to_mono_channel(&stereos))
+        Ok(audioutils::stereos_to_mono_channel(&stereos))
     }
 }
