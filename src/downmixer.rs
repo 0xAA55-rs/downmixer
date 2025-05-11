@@ -286,7 +286,7 @@ pub mod speaker_positions {
     }
 }
 
-/// ## Downmixer params for every channel. All of the weights of each speaker are defined here.
+/// * Downmixer params for every channel. All of the weights of each speaker are defined here.
 #[derive(Debug, Clone, Copy)]
 pub struct DownmixerParams {
     /// * Front left/right dB modifier
@@ -327,7 +327,7 @@ pub struct DownmixerParams {
 }
 
 impl DownmixerParams {
-    /// ## Setup default parameters
+    /// * Setup default parameters
     pub fn new() -> Self {
         Self {
             front_lr_db: 0.0,
@@ -406,7 +406,7 @@ impl Default for DownmixerParams {
     }
 }
 
-/// ## Downmixer to downmix multi-channels audio to stereo
+/// * Downmixer to downmix multi-channels audio to stereo
 #[derive(Debug, Clone, Copy)]
 pub struct Downmixer {
     /// Num channels
@@ -420,7 +420,7 @@ pub struct Downmixer {
 }
 
 impl Downmixer {
-    /// ## Create a new `Downmixer` by specifying the channel mask and the `DownmixerParams` to compute gains for each channel.
+    /// * Create a new `Downmixer` by specifying the channel mask and the `DownmixerParams` to compute gains for each channel.
     pub fn new(channel_mask: u32, params: DownmixerParams) -> Self {
         let mut ret = Self {
             channels: 0,
