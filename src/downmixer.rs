@@ -414,7 +414,7 @@ pub struct Downmixer {
 
 impl Downmixer {
     /// ## Create a new `Downmixer` by specifying the channel mask and the `DownmixerParams` to compute gains for each channel.
-    pub fn new(channel_mask: u32, params: DownmixerParams) -> Result<Self, AudioError> {
+    pub fn new(channel_mask: u32, params: DownmixerParams) -> Self {
         let mut ret = Self {
             channels: 0,
             channel_mask,
@@ -422,7 +422,7 @@ impl Downmixer {
         };
         ret.gains = params.gains_from_channel_mask(channel_mask).into_iter().collect();
         ret.channels = ret.gains.len() as u16;
-        Ok(ret)
+        ret
     }
 
     /// * Downmix an audio frame to a stereo frame.
