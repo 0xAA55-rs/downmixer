@@ -346,9 +346,8 @@ impl DownmixerParams {
     }
 
     /// * Convert the `DownmixerParams` from `dB` to `gain`, build a `BTreeMap`, use the name to index it.
-    /// * Doing this is to normalize gains correctly. Normalization should not do extra `sum` for both left and right channels.
-    pub fn convert_to_normalized_gains(&self) -> BTreeMap<&'static str, f64> {
-        let gains = [
+    pub fn convert_to_gains(&self) -> BTreeMap<&'static str, f64> {
+        [
             ("front_lr", self.front_lr_db),
             ("front_center", self.front_center_db),
             ("lowfreq", self.lowfreq_db),
@@ -361,16 +360,14 @@ impl DownmixerParams {
             ("top_front_center", self.top_front_center_db),
             ("top_back_lr", self.top_back_lr_db),
             ("top_back_center", self.top_back_center_db),
-        ].map(|(name, db)|(name, db_to_gain(db)));
-        let sum: f64 = gains.map(|(_, g)|g).iter().sum();
-        gains.into_iter().map(|(name, gain)|(name, gain / sum)).collect()
+        ].map(|(name, db)|(name, db_to_gain(db))).into_iter().collect()
     }
 
     /// * Convert a channel mask to each channel's gain value
     /// * If the corresponding bit in the channel_mask is zero, the bit and the gain value will not be stored in the list
     pub fn gains_from_channel_mask(&self, channel_mask: u32) -> Vec<(u32, f64)> {
         use speaker_positions::*;
-        let gains = self.convert_to_normalized_gains();
+        let gains = self.convert_to_gains();
         (0..18).flat_map(
         |i| -> Option<(u32, f64)> {
             let bit = 1 << i; // The bit
@@ -440,9 +437,11 @@ impl Downmixer {
     where
         S: SampleType {
         use speaker_positions::*;
-        let lmix: f64 = self.gains.iter().enumerate().map(|(i, (b, x))| if is_lcenter(*b) {frame[i].to_f64() * x} else {0.0}).sum();
-        let rmix: f64 = self.gains.iter().enumerate().map(|(i, (b, x))| if is_rcenter(*b) {frame[i].to_f64() * x} else {0.0}).sum();
-        (S::scale_from(lmix), S::scale_from(rmix))
+        let lmax: f64 = self.gains.iter().enumerate().map(|(_, &(b, g))| if is_lcenter(b) {g} else {0.0}).sum();
+        let rmax: f64 = self.gains.iter().enumerate().map(|(_, &(b, g))| if is_rcenter(b) {g} else {0.0}).sum();
+        let lmix: f64 = self.gains.iter().enumerate().map(|(i, &(b, g))| if is_lcenter(b) {frame[i].to_f64() * g} else {0.0}).sum();
+        let rmix: f64 = self.gains.iter().enumerate().map(|(i, &(b, g))| if is_rcenter(b) {frame[i].to_f64() * g} else {0.0}).sum();
+        (S::scale_from(lmix / lmax), S::scale_from(rmix / rmax))
     }
 
     /// Downmix multiple audio frames to stereo frames
