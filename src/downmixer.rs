@@ -335,7 +335,7 @@ impl DownmixerParams {
             lowfreq_db: -6.0,
             back_lr_db: -3.0,
             front_center_lr_db: -1.5,
-            back_center_db: -6.0,
+            back_center_db: -4.5,
             side_lr_db: -3.0,
             top_center_db: -4.5,
             top_front_lr_db: -3.0,
