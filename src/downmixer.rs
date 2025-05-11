@@ -437,8 +437,8 @@ impl Downmixer {
     where
         S: SampleType {
         use speaker_positions::*;
-        let lmax: f64 = self.gains.iter().enumerate().map(|(_, &(b, g))| if is_lcenter(b) {g} else {0.0}).sum();
-        let rmax: f64 = self.gains.iter().enumerate().map(|(_, &(b, g))| if is_rcenter(b) {g} else {0.0}).sum();
+        let lmax: f64 = self.gains.iter().map(|&(b, g)| if is_lcenter(b) {g} else {0.0}).sum();
+        let rmax: f64 = self.gains.iter().map(|&(b, g)| if is_rcenter(b) {g} else {0.0}).sum();
         let lmix: f64 = self.gains.iter().enumerate().map(|(i, &(b, g))| if is_lcenter(b) {frame[i].to_f64() * g} else {0.0}).sum();
         let rmix: f64 = self.gains.iter().enumerate().map(|(i, &(b, g))| if is_rcenter(b) {frame[i].to_f64() * g} else {0.0}).sum();
         (S::scale_from(lmix / lmax), S::scale_from(rmix / rmax))
