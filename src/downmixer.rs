@@ -86,8 +86,38 @@ pub mod speaker_positions {
     /// * The channel mask for stereo audio layout
     pub const STEREO_LAYOUT: u32 = FRONT_LEFT | FRONT_RIGHT;
 
+    /// * The channel mask for dolby 2.1 audio layout
+    pub const DOLBY_2_1_LAYOUT: u32 =
+        FRONT_LEFT
+        | FRONT_RIGHT
+        | LOW_FREQ;
+
+    /// * The channel mask for dolby 3.1 audio layout
+    pub const DOLBY_3_1_LAYOUT: u32 =
+        FRONT_LEFT
+        | FRONT_RIGHT
+        | FRONT_CENTER
+        | LOW_FREQ;
+
+    /// * The channel mask for dolby 4.1 audio layout with back speakers
+    pub const DOLBY_4_1_FRONT_BACK_LAYOUT: u32 =
+        FRONT_LEFT
+        | FRONT_RIGHT
+        | BACK_LEFT
+        | BACK_RIGHT
+        | LOW_FREQ;
+
+    /// * The channel mask for dolby 4.1 audio layout with side speakers
+    pub const DOLBY_4_1_FRONT_SIDE_LAYOUT: u32 =
+        FRONT_LEFT
+        | FRONT_RIGHT
+        | SIDE_LEFT
+        | SIDE_RIGHT
+        | LOW_FREQ;
+
     /// * The channel mask for dolby 5.1 audio layout with back speakers
-    pub const DOLBY_5_1_FRONT_BACK_LAYOUT: u32 = FRONT_LEFT
+    pub const DOLBY_5_1_FRONT_BACK_LAYOUT: u32 =
+        FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
         | BACK_LEFT
@@ -95,7 +125,8 @@ pub mod speaker_positions {
         | LOW_FREQ;
 
     /// * The channel mask for dolby 5.1 audio layout with side speakers
-    pub const DOLBY_5_1_FRONT_SIDE_LAYOUT: u32 = FRONT_LEFT
+    pub const DOLBY_5_1_FRONT_SIDE_LAYOUT: u32 =
+        FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
         | SIDE_LEFT
@@ -103,7 +134,8 @@ pub mod speaker_positions {
         | LOW_FREQ;
 
     /// * The channel mask for dolby 6.1 audio layout
-    pub const DOLBY_6_1_LAYOUT: u32 = FRONT_LEFT
+    pub const DOLBY_6_1_LAYOUT: u32 =
+        FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
         | SIDE_LEFT
@@ -112,7 +144,8 @@ pub mod speaker_positions {
         | LOW_FREQ;
 
     /// * The channel mask for dolby 7.1 audio layout
-    pub const DOLBY_7_1_LAYOUT: u32 = FRONT_LEFT
+    pub const DOLBY_7_1_LAYOUT: u32 =
+        FRONT_LEFT
         | FRONT_RIGHT
         | FRONT_CENTER
         | SIDE_LEFT
@@ -122,7 +155,8 @@ pub mod speaker_positions {
         | LOW_FREQ;
 
     /// * The channel masks only for center channels
-    pub const CENTER_BITS: u32 = FRONT_CENTER
+    pub const CENTER_BITS: u32 =
+        FRONT_CENTER
         | BACK_CENTER
         | LOW_FREQ
         | TOP_CENTER
@@ -130,7 +164,8 @@ pub mod speaker_positions {
         | TOP_BACK_CENTER;
 
     /// * The channel masks only for left channels
-    pub const LEFT_BITS: u32 = FRONT_LEFT
+    pub const LEFT_BITS: u32 =
+        FRONT_LEFT
         | BACK_LEFT
         | FRONT_LEFT_OF_CENTER
         | SIDE_LEFT
@@ -138,7 +173,8 @@ pub mod speaker_positions {
         | TOP_BACK_LEFT;
 
     /// * The channel masks only for right channels
-    pub const RIGHT_BITS: u32 = FRONT_RIGHT
+    pub const RIGHT_BITS: u32 =
+        FRONT_RIGHT
         | BACK_RIGHT
         | FRONT_RIGHT_OF_CENTER
         | SIDE_RIGHT
@@ -254,6 +290,9 @@ pub mod speaker_positions {
             0 => Err(AudioError::GuessChannelMaskFailed(channels)),
             1 => Ok(MONO_LAYOUT),
             2 => Ok(STEREO_LAYOUT),
+            3 => Ok(DOLBY_2_1_LAYOUT),
+            4 => Ok(DOLBY_3_1_LAYOUT),
+            5 => Ok(DOLBY_4_1_FRONT_BACK_LAYOUT),
             6 => Ok(DOLBY_5_1_FRONT_BACK_LAYOUT),
             7 => Ok(DOLBY_6_1_LAYOUT),
             8 => Ok(DOLBY_7_1_LAYOUT),
