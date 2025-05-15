@@ -501,4 +501,11 @@ impl Downmixer {
         let (l, r) = self.downmix_frame_to_stereo(frame);
         S::average(l, r)
     }
+
+    /// * Downmix an audio frame to a mono frame.
+    pub fn downmix_frame_to_monos<S>(&self, frames: &[Vec<S>]) -> Vec<S>
+    where
+        S: SampleType {
+        frames.iter().map(|frame|self.downmix_frame_to_mono(frame)).collect()
+    }
 }
