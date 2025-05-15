@@ -90,72 +90,64 @@ pub mod speaker_positions {
     /// * The channel mask for stereo audio layout
     pub const STEREO_LAYOUT: u32 = FRONT_LEFT | FRONT_RIGHT;
 
+    /// * The channel mask for surround audio layout
+    pub const SURROUND_LAYOUT: u32 = MONO_LAYOUT | STEREO_LAYOUT;
+
+    /// * The channel mask for side left and side right
+    pub const SIDE_LR_BITS: u32 = SIDE_LEFT | SIDE_RIGHT;
+
+    /// * The channel mask for back left and back right
+    pub const BACK_LR_BITS: u32 = BACK_LEFT | BACK_RIGHT;
+
+    /// * The channel mask for back surround audio layout
+    pub const BACK_SURROUND_BITS: u32 = BACK_CENTER | BACK_LR_BITS;
+
     /// * The channel mask for dolby 2.1 audio layout
     pub const DOLBY_2_1_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
+        STEREO_LAYOUT
         | LOW_FREQ;
 
     /// * The channel mask for dolby 3.1 audio layout
     pub const DOLBY_3_1_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | FRONT_CENTER
+        SURROUND_LAYOUT
         | LOW_FREQ;
 
     /// * The channel mask for dolby 4.1 audio layout with back speakers
     pub const DOLBY_4_1_FRONT_BACK_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | BACK_LEFT
-        | BACK_RIGHT
+        STEREO_LAYOUT
+        | BACK_LR_BITS
         | LOW_FREQ;
 
     /// * The channel mask for dolby 4.1 audio layout with side speakers
     pub const DOLBY_4_1_FRONT_SIDE_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | SIDE_LEFT
-        | SIDE_RIGHT
+        STEREO_LAYOUT
+        | SIDE_LR_BITS
         | LOW_FREQ;
 
     /// * The channel mask for dolby 5.1 audio layout with back speakers
     pub const DOLBY_5_1_FRONT_BACK_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | FRONT_CENTER
-        | BACK_LEFT
-        | BACK_RIGHT
+        SURROUND_LAYOUT
+        | BACK_LR_BITS
         | LOW_FREQ;
 
     /// * The channel mask for dolby 5.1 audio layout with side speakers
     pub const DOLBY_5_1_FRONT_SIDE_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | FRONT_CENTER
-        | SIDE_LEFT
-        | SIDE_RIGHT
+        SURROUND_LAYOUT
+        | SIDE_LR_BITS
         | LOW_FREQ;
 
     /// * The channel mask for dolby 6.1 audio layout
     pub const DOLBY_6_1_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | FRONT_CENTER
-        | SIDE_LEFT
-        | SIDE_RIGHT
+        SURROUND_LAYOUT
+        | SIDE_LR_BITS
         | BACK_CENTER
         | LOW_FREQ;
 
     /// * The channel mask for dolby 7.1 audio layout
     pub const DOLBY_7_1_LAYOUT: u32 =
-        FRONT_LEFT
-        | FRONT_RIGHT
-        | FRONT_CENTER
-        | SIDE_LEFT
-        | SIDE_RIGHT
-        | BACK_LEFT
-        | BACK_RIGHT
+        SURROUND_LAYOUT
+        | SIDE_LR_BITS
+        | BACK_LR_BITS
         | LOW_FREQ;
 
     /// * The channel masks only for center channels
